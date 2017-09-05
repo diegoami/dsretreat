@@ -9,3 +9,9 @@ def fib(n):
 print(fib(30),fib(7))
 print([fib(i) for i in range(20)])
 #print(fib(-1))
+
+seq = [1,1]
+def fib(seq, n):
+    for i in range(n):
+        seq.append(seq[-1]+seq[-2])
+    return seq
