@@ -11,7 +11,8 @@ import xgboost as xgb
 from xgboost.sklearn import XGBClassifier
 from sklearn import cross_validation, metrics   #Additional scklearn functions
 from sklearn.grid_search import GridSearchCV   #Perforing grid search
-
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors import KNeighborsClassifier
 import matplotlib.pylab as plt
 
 from matplotlib.pylab import rcParams
@@ -126,6 +127,10 @@ def get_df(file):
     tdata.to_csv('../data/titanic/out_'+os.path.basename(file))
     return tdata
 
+def print_score(clf, X, y):
+
+    scores = cross_val_score(clf, X, y, cv=5)
+    print(scores)
 
 def print_sol(clf, test_df, output_file, passenger_ids):
     if 'PassengerId' in test_df.columns:
@@ -147,33 +152,82 @@ IDcol = 'PassengerId'
 target = 'Survived'
 passengerIds = test_df[IDcol]
 
+
 predictors = [x for x in train_df.columns if x not in [target, IDcol]]
+"""
 xgb1 = XGBClassifier(
- learning_rate =0.1,
+ learning_rate =0.05,
  n_estimators=1000,
  max_depth=9,
  min_child_weight=5,
  gamma=0,
- subsample=0.8,
+ subsample=0.9,
  colsample_bytree=0.8,
  objective= 'binary:logistic',
  nthread=4,
  scale_pos_weight=1,
+ reg_alpha = 0.001,
  seed=27)
 modelfit(xgb1, train_df, predictors)
 
 
-print_sol(xgb1, test_df, '../data/titanic/xgb3.csv', passengerIds)
+print_sol(xgb1, test_df, '../data/titanic/xgb6.csv', passengerIds)
 
 param_test1 = {
- 'max_depth':list(range(3,10,2)),
- 'min_child_weight':list(range(1,6,2))
+# 'max_depth':list(range(3,10,2)),
+# 'min_child_weight':list(range(1,6,2))
+
+  #  'gamma': [i / 10.0 for i in range(0, 5)]
+
+#'subsample':[i/10.0 for i in range(6,10)],
+# 'colsample_bytree':[i/10.0 for i in range(6,10)]
+#'reg_alpha':[0, 0.001, 0.005, 0.01, 0.05]
+   'learning_rate' : [0.05,0.1,0.15,0.2,0.25,0.3]
 }
 gsearch1 = GridSearchCV(estimator = XGBClassifier( learning_rate =0.1, n_estimators=140,
- gamma=0, subsample=0.8, colsample_bytree=0.8,
- objective= 'binary:logistic', nthread=4, scale_pos_weight=1, seed=27),
+                                                   max_depth=9,
+                                                   min_child_weight=5,
+  subsample=0.9, colsample_bytree=0.8, gamma=0,
+ objective= 'binary:logistic', nthread=4, scale_pos_weight=1, seed=27,  reg_alpha = 0.001),
  param_grid = param_test1, scoring='roc_auc',n_jobs=4,iid=False, cv=5)
 gsearch1.fit(train_df[predictors],train_df[target])
 print(gsearch1.best_params_, gsearch1.best_score_)
 
-print_sol(gsearch1, test_df, '../data/titanic/xgb4.csv', passengerIds)
+print_sol(gsearch1, test_df, '../data/titanic/xgb5.csv', passengerIds)
+
+param_test2 = {
+    'n_neighbors' : list(range(1,50))
+}
+ksearch1 = GridSearchCV(estimator = KNeighborsClassifier(),
+                        param_grid=param_test2, scoring='roc_auc', n_jobs=4, iid=False, cv=5)
+ksearch1.fit(train_df[predictors],train_df[target])
+print(ksearch1.best_params_, ksearch1.best_score_)
+
+ksearch2 =  KNeighborsClassifier(10)
+ksearch2.fit(train_df[predictors],train_df[target])
+print_sol(ksearch2, test_df, '../data/titanic/knn3.csv', passengerIds)
+
+"""
+
+"""
+param_test3 = {
+    'n_estimators' : list(range(35,50)),
+    'max_features' : list(range(2,7)),
+    'min_samples_split' : list(range(2,6))
+}
+
+
+rsearch1 = GridSearchCV(estimator = RandomForestClassifier(criterion='entropy'),
+                        param_grid=param_test3, scoring='roc_auc', n_jobs=4, iid=False, cv=5)
+rsearch1.fit(train_df[predictors],train_df[target])
+print(rsearch1 .best_params_, rsearch1 .best_score_)
+"""
+rsearch2 =  RandomForestClassifier(n_estimators=41, max_features=2,criterion='entropy', min_samples_split= 4)
+rsearch2.fit(train_df[predictors],train_df[target])
+print_sol(rsearch2, test_df, '../data/titanic/rand_2.csv', passengerIds)
+print_score(rsearch2,train_df[predictors],train_df[target] )
+
+rsearch3 =  RandomForestClassifier(n_estimators=41, max_features=3,criterion='entropy', min_samples_split= 4)
+rsearch3.fit(train_df[predictors],train_df[target])
+print_sol(rsearch3, test_df, '../data/titanic/rand_3.csv', passengerIds)
+print_score(rsearch3,train_df[predictors],train_df[target] )
