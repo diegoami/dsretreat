@@ -126,9 +126,23 @@ etrain_df = enrich(train_df)
 etest_df = enrich(test_df)
 
 
-#dfg = pd.DataFrame(
-#ndf = etrain_df.groupby(['SexC','Pclass','AgeC','Survived'])['PassengerId'].count().reset_index(name="count")
-#print(ndf)
+def do_group(etrain_df):
+    #ndf = etrain_df.groupby(['SexC','Pclass','AgeC','Survived'])['PassengerId'].count().reset_index(name="count")
+    ndf = etrain_df.groupby(['SexC', 'Pclass', 'AgeC', 'Survived'])['PassengerId'].count().reset_index(name="Count")
+
+    #ndf.columns = ['SexC', 'Pclass', 'AgeC', 'Survived', 'Count']
+
+    print(ndf)
+    #print(ndf.pivot(index='SexC', columns=['Pclass','AgeC', 'Survived'], values='Count'))
+
+
+    ndf2 = ndf.set_index(['SexC', 'Pclass', 'AgeC', 'Survived'])
+    print(ndf2.loc[pd.IndexSlice[:,:,:,1],:])
+    print(ndf2.pivot_table(index='SexC', columns=['Pclass','AgeC', 'Survived'], values='Count'))
+    print(ndf2.pivot_table(index='SexC', columns=['Pclass','AgeC', 'Survived'], values='Count'))
+
+
+# print(ndf2)
 
 def do_stuff():
     mtdf = etrain_df[etrain_df['SexC']==1]
@@ -142,3 +156,4 @@ def do_stuff():
     print(ndf[ndf['Survived']==1])
     print(ndf[ndf['Survived']==0])
 
+do_group(etrain_df)

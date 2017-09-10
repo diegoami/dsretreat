@@ -53,18 +53,16 @@ class SexClassifier(BaseTitanic, ClassifierMixin):
 
 class ProbClassifier(BaseTitanic, ClassifierMixin):
 
-    def __init__(self):
-        super.__init__(self)
+    def __init__(self, probs):
+
         self.probs = probs
 
-    def apply_prob(self, a):
-
-        return 1 if random() < self.probs() else 0
 
     def predict(self, X):
         n_samples = X.shape[0]
-        predictions = np.zeros((n_samples, 1))
-        predictions = np.apply_along_axis(apply_prob, 1, X)
+        rands = np.random.rand(n_samples)
+        #print(self.probs.iloc[:,1].shape)
+        predictions = (rands < self.probs.iloc[:,1]).astype(int)
         return predictions
 
 
@@ -85,7 +83,7 @@ class CustomClassifier(BaseTitanic, ClassifierMixin):
     def predict(self, X):
         n_samples = X.shape[0]
         predictions = np.zeros((n_samples, 1))
-        predictions = np.apply_along_axis(survive, 1, X)
+        predictions = np.apply_along_axis(self.survive, 1, X)
         return predictions
 
 
@@ -98,7 +96,7 @@ X = etrain_df[['SexC','Pclass','AgeC']].as_matrix()
 
 ss, rslts = load_submissions()
 
-print_score(tcl,X,y )
+#print_score(tcl,X,y )
 best = 400
 for i in range(20000):
     if i % 1000 == 0:
@@ -110,4 +108,4 @@ for i in range(20000):
     if (sumd < best):
         best = sumd
         print("Found diff : {}".format(best))
-        print_sol(yp, 'new/best_4.csv', etest_df['PassengerId'])
+        print_sol(yp, 'new/best_5.csv', etest_df['PassengerId'])
