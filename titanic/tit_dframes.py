@@ -137,12 +137,16 @@ def do_group(etrain_df):
 
 
     ndf2 = ndf.set_index(['SexC', 'Pclass', 'AgeC', 'Survived'])
+    print(ndf2)
     print(ndf2.loc[pd.IndexSlice[:,:,:,1],:])
     print(ndf2.pivot_table(index='SexC', columns=['Pclass','AgeC', 'Survived'], values='Count'))
-    print(ndf2.pivot_table(index='SexC', columns=['Pclass','AgeC', 'Survived'], values='Count'))
+    print(ndf2.pivot_table(index=['SexC','Pclass','AgeC'], columns=['Survived'], values='Count'))
 
+    print(ndf2.unstack(['Survived']))
+    print(ndf2.unstack(['AgeC', 'Survived']))
 
 # print(ndf2)
+
 
 def do_stuff():
     mtdf = etrain_df[etrain_df['SexC']==1]
