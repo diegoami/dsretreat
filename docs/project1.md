@@ -23,7 +23,7 @@ are being spoken between the 32th and the 35th second, and the 35th and 38th sec
 The language of the text should be not relevant.
 To train this model we would use a database of songs along with their respective SRT files.
 
-Producing the actual text would be out of scope of this step
+Producing the actual text would be out of scope of this step.
 
 ## POSSIBLE EXTENSION - INTEGRATING WITH THE LYRICS
 
@@ -67,3 +67,10 @@ Qui dit étude dit travail,
 5
 00:00:35,020 --> 00:00:38,169
 Qui dit taf te dit les thunes,
+
+## CONCLUSION
+
+This would be for me an interesting and challenging project.
+Might require having to get theoretical knowledge about music formats and it might not
+get good results,
+
