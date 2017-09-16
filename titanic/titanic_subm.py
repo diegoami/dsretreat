@@ -46,6 +46,8 @@ def get_df(file):
     if 'Embarked' in tdata.columns:
         tdata = tdata.drop('Embarked', axis=1)
 
+
+
     return tdata
 
 
